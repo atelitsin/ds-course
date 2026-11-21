@@ -1,0 +1,40 @@
+stages:
+  prepare:
+    cmd: python spaceship_pipeline/prepare_spaceship.py
+    deps:
+      - spaceship_pipeline/prepare_spaceship.py
+      - kaggle/input/spaceship-titanic/train.csv
+    outs:
+      - prepared
+
+  train:
+    cmd: python spaceship_pipeline/train_spaceship.py
+    deps:
+      - spaceship_pipeline/train_spaceship.py
+      - prepared/train.csv
+    params:
+      - train.n_estimators
+    outs:
+      - spaceship_model.joblib
+
+  evaluate:
+    cmd: python spaceship_pipeline/evaluate_spaceship.py
+    deps:
+      - spaceship_pipeline/evaluate_spaceship.py
+      - prepared/validation.csv
+      - spaceship_model.joblib
+    metrics:
+      - metrics.json
+    plots:
+      - roc.csv:
+          template: linear
+          x: fpr
+          y: tpr
+          title: "ROC-кривая на валидации"
+          x_label: "Доля ложноположительных"
+          y_label: "Доля истинноположительных"
+      - confusion.csv:
+          template: confusion
+          x: actual
+          y: predicted
+          title: "Матрица ошибок на валидации"

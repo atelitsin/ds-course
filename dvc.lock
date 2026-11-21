@@ -1,0 +1,66 @@
+schema: '2.0'
+stages:
+  train:
+    cmd: python spaceship_pipeline/train_spaceship.py
+    deps:
+    - path: prepared/train.csv
+      hash: md5
+      md5: f03e937055d2fc0521af8c654c6b1ade
+      size: 231610
+    - path: spaceship_pipeline/train_spaceship.py
+      hash: md5
+      md5: 27377b5dc9322492888cc7d96e536946
+      size: 436
+    params:
+      params.yaml:
+        train.n_estimators: 200
+    outs:
+    - path: spaceship_model.joblib
+      hash: md5
+      md5: 20fc35cbea23c1c2880a4f3fe5fce384
+      size: 24520697
+  prepare:
+    cmd: python spaceship_pipeline/prepare_spaceship.py
+    deps:
+    - path: kaggle/input/spaceship-titanic/train.csv
+      hash: md5
+      md5: 8cf8d6d39aecf7cc6466eb79b0ed6e1b
+      size: 805421
+    - path: spaceship_pipeline/prepare_spaceship.py
+      hash: md5
+      md5: e2bef798d3a0f040b189de6da9044b05
+      size: 531
+    outs:
+    - path: prepared
+      hash: md5
+      md5: c74106a3f7b1bbab149539b1cff868c4.dir
+      size: 289754
+      nfiles: 2
+  evaluate:
+    cmd: python spaceship_pipeline/evaluate_spaceship.py
+    deps:
+    - path: prepared/validation.csv
+      hash: md5
+      md5: a4c15b4b510748b0963007e3ed1b63db
+      size: 58144
+    - path: spaceship_model.joblib
+      hash: md5
+      md5: 20fc35cbea23c1c2880a4f3fe5fce384
+      size: 24520697
+    - path: spaceship_pipeline/evaluate_spaceship.py
+      hash: md5
+      md5: 71a4697a3c4ee6dd9ca5c4c03849accf
+      size: 843
+    outs:
+    - path: confusion.csv
+      hash: md5
+      md5: 9562a8f9a91bee277506b14f26823c0c
+      size: 19068
+    - path: metrics.json
+      hash: md5
+      md5: f1c36cd7f8e9aa09a7d3fa1ed9e90785
+      size: 70
+    - path: roc.csv
+      hash: md5
+      md5: fa3a57e82fcffa0cb4c9132cbf1a182a
+      size: 11182
